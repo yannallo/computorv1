@@ -1,60 +1,37 @@
 #include "computorv1.h"
 
-static void add_coef(Term **list)
+static size_t get_max_power(Polynom left, Polynom right)
 {
-	Term *cur = *list;
-	Term *next;
-	Term *target;
+	size_t power = 0;
 
-	if (*list == NULL)
-		return;
-	while (cur)
+	for (size_t i = 0; i < left.size; i++)
 	{
-		next = cur->next;
-		while (next)
-		{
-			if (cur->exponent == next->exponent)
-			{
-				cur->coef += next->coef;
-				target = next;
-				next = next->next;
-				remove_node(list, target);
-			}
-			else
-				next = next->next;
-		}
-		cur = cur->next;
+		if (left.terms[i].power > power)
+			power = left.terms[i].power;
 	}
+	for (size_t i = 0; i < right.size; i++)
+	{
+		if (right.terms[i].power > power)
+			power = right.terms[i].power;
+	}
+	return power;
 }
 
-static void rm_coef(Term **list)
+double *refacto(Polynom *left, Polynom *right, size_t *max_power)
 {
-	Term *cur = *list;
+	double *coefs;
 
-	while (cur)
-	{
-		if (cur->coef == 0)
-			remove_node(list, cur);
-		cur = cur->next;
+	*max_power = get_max_power(*left, *right);
+	coefs = malloc(sizeof(double) * (*max_power + 1));
+	if (!coefs) {
+		ft_putstr("Error: MALLOC FAIL\n");
+		return NULL;
 	}
-}
-
-void refacto(Data *data)
-{
-	add_coef(&(data->left));
-	add_coef(&(data->right));
-	rm_coef(&(data->left));
-	rm_coef(&(data->right));
-
-	while (data->right)
-	{
-		Term *node = data->right;
-
-		data->right = data->right->next;
-		node->coef = -node->coef;
-		node->next = NULL;
-		add_node(&(data->left), node);
-	}
-	add_coef(&(data->left));
-	rm_coef(&(data->left));
+	for (size_t i = 0; i < *max_power + 1; i++)
+		coefs[i] = 0;
+	for (size_t i = 0; i < left->size; i++)
+		coefs[left->terms[i].power] += left->terms[i].coef;
+	for (size_t i = 0; i < right->size; i++)
+		coefs[right->terms[i].power] -= right->terms[i].coef;
+	return coefs;
 }

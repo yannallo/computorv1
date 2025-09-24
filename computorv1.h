@@ -2,59 +2,57 @@
 #define COMPUTORV1
 
 #include <stddef.h>
-#include <stdlib.h>
-#include <math.h>
-
-#include <unistd.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <float.h>
+#include <math.h>
+#include <limits.h>
+
+typedef enum {
+	END,
+	INT,
+	FLOAT,
+	EQUAL,
+	OP,
+	SIGN,
+	VAR,
+	POW,
+} TYPE;
+
+typedef struct s_token {
+	TYPE type;
+	char *str;
+} Token;
 
 typedef struct s_term {
-	char *str;
 	double coef;
-	int exponent;
-	struct s_term *next;
+	size_t power;
 } Term;
 
-typedef struct s_data {
-	Term *left;
-	Term *right;
-} Data;
+typedef struct s_polynom {
+	Term *terms;
+	size_t size;
+} Polynom;
 
-// MAIN
-void print_array(char **arr);
+//Token
+Token *tokenize(char *str);
 
-// TERM
-Term *get_tail(Term *list);
-Term *create_node(void);
-void add_node(Term **list, Term *node);
-void free_list(Term *list);
-void print_node(Term *node);
-void printTerm(Term *list);
-void print_list(Term *list);
-void fill_term(Term *term);
-void remove_node(Term **list, Term *node);
-Term *get_node(Term *list, size_t exponent);
-void free_node(Term *node);
-size_t get_size(Term *list);
-
-// UTILS
-void ft_putstr(char *str);
+//Utils
 size_t ft_strlen(char *str);
-char *ft_strstr(char *fullstr, char *substr);
-char *ft_strchr(char *str, int c);
-int ft_isblank(int c);
-void free_array(char **array);
-char **ft_split(char *str, int sep);
-char *ft_substr(char *str, int offset, int len);
+int ft_putstr(char *str);
 int ft_isdigit(int c);
+char *ft_substr(char *str, int offset, int len);
+char *ft_strchr(char *str, int c);
+void free_all(Token *tokens, Polynom l, Polynom r);
 
-// PARSE
-int parse(Data *data, char *str);
+//Parse
+int parse(Token *tokens, Polynom *left, Polynom *right);
 
-// REFACTO
-void refacto(Data *data);
+//Refacto
+double *refacto(Polynom *left, Polynom *right, size_t *max_power);
 
-// SOLVE
-void solve(Term *term);
+//Solve
+void solve(double *coefs, size_t max_power);
 
 #endif

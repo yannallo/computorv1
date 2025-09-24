@@ -1,21 +1,25 @@
 NAME = computorv1
+
 CC = gcc
 FLAG = -Wall -Wextra -Werror
-LEAK = -fsanitize=leak $(FLAG)
-SRC = main.c parse.c solve.c refacto.c term.c utils.c ft_split.c
-OBJ = $(SRC:.c=.o)
+LEAK = -fsanitize=address -g
 INCLUDE = -lm
+
+HEADER = computorv1.h
+SRC = main.c token.c parse.c refacto.c solve.c utils.c
+OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
 
-leak: $(OBJ)
-	$(CC) $(LEAK) $(INCLUDE) -o $(NAME) $(OBJ)
+leak: FLAG += $(LEAK)
+leak: INCLUDE += $(LEAK)
+leak: re
 
 $(NAME): $(OBJ)
 	$(CC) $(INCLUDE) -o $(NAME) $(OBJ)
 
-%.o: %.c Makefile
-	$(CC) -c $< -o $@
+%.o: %.c Makefile $(HEADER) 
+	$(CC) $(FLAG) -c $< -o $@
 
 clean:
 	rm -f $(OBJ)
@@ -25,4 +29,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re leak

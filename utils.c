@@ -1,47 +1,47 @@
 #include "computorv1.h"
 
-void ft_putstr(char *str)
-{
-	size_t len = ft_strlen(str);
-	write(1, str, len);
-}
-
 size_t ft_strlen(char *str)
 {
 	size_t i = 0;
-	
 	while (str[i])
 		i++;
 	return i;
 }
 
-char *ft_strstr(char *fullstr, char *substr)
+int ft_putstr(char *str)
 {
-	size_t substr_len = ft_strlen(substr) - 1;
-	size_t i = 0;
-	size_t j = 0;
+	return write(1, str, ft_strlen(str));
+}
 
-	if (!fullstr || !substr)
+int ft_isdigit(int c)
+{
+	return (c >= '0' && c <= '9');
+}
+
+char *ft_substr(char *str, int offset, int len)
+{
+	char *buf;
+	size_t size;
+
+	if (!str || offset < 0 || len < 0)
 		return NULL;
-	while (fullstr[i])
-	{
-		j = 0;
-		while (fullstr[i + j] == substr[j] && fullstr[i+j])
-		{
-			if (j >= substr_len)
-				return (fullstr + i);
-			j++;
-		}
-		i++;
-	}
-	return NULL;
+	size = ft_strlen(str) - offset;
+	if (size > (size_t)len)
+		size = len;
+	buf = malloc(sizeof(char) * (size + 1));
+	if (!buf)
+		return NULL;
+	for (size_t i = 0; i < size; i++)
+		buf[i] = str[i+offset];
+	buf[size] = '\0';
+	return buf;
 }
 
 char *ft_strchr(char *str, int c)
 {
 	size_t i = 0;
 
-	if (str == NULL)
+	if (!str)
 		return NULL;
 
 	while (str[i])
@@ -53,44 +53,19 @@ char *ft_strchr(char *str, int c)
 	return NULL;
 }
 
-int ft_isblank(int c)
-{
-	return (c == ' ' || c == '\t');
-}
-
-int ft_isdigit(int c)
-{
-	return (c > 47 && c < 58);
-}
-
-void free_array(char **array)
+void free_all(Token *tokens, Polynom l, Polynom r)
 {
 	size_t i = 0;
-
-	while (array[i])
-	{
-		free(array[i]);
-		i++;
+	if (tokens) {
+		while (tokens[i].type) {
+			if (tokens[i].str)
+				free(tokens[i].str);
+			i++;
+		}
+		free(tokens);
 	}
-	free(array);
-}
-
-char *ft_substr(char *str, int offset, int len)
-{
-	size_t i = 0;
-	char *buf = NULL;
-	
-	if (offset + len > ft_strlen(str))
-		return NULL;
-	buf = malloc(sizeof(char) * (len + 1));
-	if (!buf)
-		return NULL;
-	while (i < len)
-	{
-		buf[i] = str[offset + i];
-		i++;
-	}
-	buf[i] = '\0';
-	
-	return buf;
-}
+	if (l.terms)
+		free(l.terms);
+	if (r.terms)
+		free(r.terms);
+}	

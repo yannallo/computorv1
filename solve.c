@@ -1,113 +1,93 @@
 #include "computorv1.h"
 
-static size_t get_degree(Term *term)
+static void print_abs(double coef)
 {
-	size_t degree = 0;
-
-	while (term)
-	{
-		if (term->exponent > degree)
-			degree = term->exponent;
-		term = term->next;
-	}
-
-	return degree;
+	if (coef < 0)
+		coef = -coef;
+	printf("%g", coef);
 }
 
-static double get_coef(Term *list, size_t exponent)
+static void print_equation(double *coefs, size_t power)
 {
-	while (list)
-	{
-		if (list->exponent == exponent)
-			return list->coef;
-		list = list->next;
-	}
-	return 0;
-}
-
-static void print_equation(Term *list)
-{
-	size_t size = get_degree(list);
-	Term *term;
-
-	if (!list)
-		return;
-
-	printf("Reduced form: ");
-	for (ssize_t i = size; i >= 0; i--)
-	{
-		term = get_node(list, i);
-		if (i != size)
-		{
-			if (term && term->coef < 0)
-				printf(" - ");
-			else
-				printf(" + ");
-		}
-		else if (term && term->coef < 0)
-			printf("-");
-
-		if (!term)
-			printf("0 * X^%d", i);
-		else
-			print_node(term);
-	}
-	printf(" = 0\n");
-}
-
-static int is_equals(Term *list)
-{
-	while (list)
-	{
-		if (list->coef != 0)
-			return 0;
-		list = list->next;
-	}
-	return 1;
-}
-
-void solve(Term *term)
-{
-	int degree = get_degree(term);
-	double a = get_coef(term, 2);
-	double b = get_coef(term, 1);
-	double c = get_coef(term, 0);
-
-	print_equation(term);
-	if (is_equals(term))
-	{
-		printf("Any real number is a solution");
+	if (power == 0) {
+		printf("%g * X^0 = 0\n", coefs[0]);
 		return ;
 	}
-
-	printf("Polynomial degree: %d\n", degree);
-	if (degree > 2)
-		ft_putstr("Polynomial degree is too high\n");
-	else if(degree == 0)
-		printf("No solution\n");
-	else if (degree == 1)
-		printf("SOLUTION: \n%g\n", -(c / b));
-	else if (degree == 2)
+	for (size_t i = power; i+1 > 0; i--)
 	{
-		double discri = b * b - 4 * a * c;
-
-		dprintf(2, "DISCRIMINANT = %g\n", discri);
-		if (discri > 0)
-		{
-			printf("There is 2 solution:\n");
-			printf("%g\n%g\n", (-b+sqrt(discri))/(2*a), (-b-sqrt(discri))/(2*a));
+		if (i == power) {
+			if (coefs[i] < 0)
+				printf("-");
 		}
-		else if (discri == 0)
-		{
-			printf("There is 1 solution:\n");
-			printf("%g\n", (-b+sqrt(discri))/(2*a));
+		else if (coefs[i] != 0) {
+			if (coefs[i] < 0)
+				printf("- ");
+			else
+				printf("+ ");
 		}
-		else if (discri < 0)
-		{
-			printf("There is 2 complex solution:\n");
-			double tmp = -b/(2*a);
-			double i = sqrt(-discri)/(2*a);
-			printf("%g + %gi\n%g - %gi\n", tmp, i, tmp, i);
+		if (coefs[i] != 0) {
+			if (coefs[i] != 1 || i == 0)
+				print_abs(coefs[i]);
+			if (i == 1)
+				printf("X");
+			else if (i != 0)
+				printf("X^%ld", i);
+			printf(" ");
 		}
 	}
+	printf("= 0\n");
+}
+
+void solve_linear(double *coefs)
+{
+	double res = -coefs[0]/coefs[1];
+	
+	if (res == 0)
+		printf("Solution:\n0\n");
+	else
+		printf("Solution:\n%g\n", res);
+}
+
+void solve_quadratic(double *coefs)
+{
+	double a = coefs[2];
+	double b = coefs[1];
+	double c = coefs[0];
+	double discri = b*b - 4*a*c;
+
+	printf("Discriminant = %g\n", discri);
+	if (discri > 0) {
+		printf("Solutions:\n%g %g\n", (-b + sqrt(discri)) / (2*a), (-b - sqrt(discri)) / (2*a));
+	}
+	else if (discri == 0) {
+		printf("Solution: %g\n", (-b + sqrt(discri)) / (2*a));
+	}
+	else {
+		double tmp = -b / (2*a);
+		double i = sqrt(-discri) / (2*a);
+		printf("Solution:\n%g + %gi  %g - %gi\n", tmp, i, tmp, i);
+	}
+}
+
+void solve(double *coefs, size_t max_power)
+{
+	size_t power = 0;
+	for (size_t i = 0; i <= max_power; i++) {
+		if (coefs[i] != 0)
+			power = i;
+	}
+	print_equation(coefs, power);
+	printf("Equation degree: %ld\n", power);
+	if (power > 2)
+		printf("Can't solve polynomial above second degree\n");
+	else if (power == 0) {
+		if (coefs[0] == 0)
+			printf("Any real number is a solution\n");
+		else
+			printf("No solution\n");
+	}
+	else if (power == 1)
+		solve_linear(coefs);
+	else if (power == 2)
+		solve_quadratic(coefs);
 }

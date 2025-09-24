@@ -1,105 +1,137 @@
 #include "computorv1.h"
 
-static int check_char(char *str)
+static Token *valid_equation(Token *tokens)
 {
 	size_t i = 0;
-	char *buf = "0123456789/*-+=X^., ";
+	bool var = false;
+	TYPE next;
+	TYPE cur = tokens[0].type;
 
-	while (str[i])
+	if (!(cur == SIGN || cur == INT || cur == FLOAT || cur == VAR || cur == END)) {
+		printf("Invalid syntax: left side of equation\n");
+		return tokens;
+	}
+	while (tokens[i+1].type != END)
 	{
-		if (!ft_strchr(buf, str[i]))
-		{
-			ft_putstr("Error: Unexpected symbol in equation");
-			return 1;
+		cur = tokens[i].type;
+		next = tokens[i+1].type;
+
+		if (!var && (cur == VAR || next == VAR))
+			var = true;
+		if ((cur == INT || cur == FLOAT) && !(next == EQUAL || next == OP || next == SIGN || next == VAR))
+			return tokens+i+1;
+		else if (cur == OP && !(next == INT || next == FLOAT || next == VAR))
+			return tokens+i+1;
+		else if (cur == SIGN && !(next == INT || next == FLOAT || next == VAR))
+			return tokens+i+1;
+		else if (cur == VAR && !(next == EQUAL || next == OP || next == SIGN || next == POW))
+			return tokens+i+1;
+		else if (cur == POW && !(next == INT || next == FLOAT))
+			return tokens+i+1;
+		else if (cur == EQUAL && !(next == INT || next == FLOAT || next == SIGN || next == VAR))
+			return tokens+i+1;
+		else if (next == POW && cur != VAR)
+			return tokens+i+1;
+		else if (next == OP && !(cur == INT || cur == FLOAT))
+			return tokens+i+1;
+		i++;
+	}
+	if (!(next == INT || next == FLOAT || next == VAR)) {
+		printf("Invalid syntax: right side of equation\n");
+		return tokens + i + 1;
+	}
+	if (!var) {
+		printf("Invalid syntax: Missing a variable 'X'\n");
+		return tokens + i + 1;
+	}
+	return NULL;
+}
+
+static size_t count_term(Token *tokens, size_t i)
+{
+	size_t count = 0;
+
+	if (tokens[i].type == SIGN)
+		i++;
+	while (tokens[i].type != END && tokens[i].type != EQUAL) {
+		if (tokens[i].type == SIGN)
+		       count++;	
+		i++;
+	}
+	return count + 1;
+}
+
+static Term parse_term(Token *tokens, size_t *i)
+{
+	int sign = 1;
+	double coef = 1;
+	size_t power = 0;
+
+	if (tokens[*i].type == SIGN) {
+		if (tokens[*i].str[0] == '-')
+			sign = -1;
+		(*i)++;
+	}
+	if (tokens[*i].type == FLOAT || tokens[*i].type == INT) {
+		coef = strtod(tokens[*i].str, NULL);
+		(*i)++;
+	}
+	if (tokens[*i].type == OP)
+		(*i)++;
+	if (tokens[*i].type == VAR) {
+		(*i)++;
+		power = 1;
+		if (tokens[*i].type == POW) {
+			(*i)++;
+			power = strtoul(tokens[*i].str, NULL, 10);
+			(*i)++;
 		}
-		i++;
 	}
-	if (!ft_strchr(str, '='))
-	{
-		ft_putstr("Error: No equality, can't solve");
+	Term res = {sign * coef, power};
+	return res;
+}
+
+static Polynom extract_term(Token *tokens, size_t *i)
+{
+	size_t idx = 0;
+	Polynom poly = {NULL, 0};
+
+	poly.size = count_term(tokens, *i);
+	poly.terms = malloc(sizeof(Term) * poly.size);
+	if (!poly.terms) {
+		ft_putstr("Error: MALLOC FAIL\n");
+		return poly;
+	}
+	while (tokens[*i].type != END && tokens[*i].type != EQUAL) {
+		Term t = parse_term(tokens, i);
+		if (t.coef == HUGE_VAL || t.coef == -HUGE_VAL || t.coef == DBL_MIN || t.power == ULONG_MAX) {
+			printf("ERROR: INVALID CONVERTION\n");
+			poly.size = 0;
+			return poly;
+		}
+		poly.terms[idx] = t;
+		idx++;
+	}
+	if (tokens[*i].type == EQUAL)
+		(*i)++;
+	return poly;
+}
+
+int parse(Token *tokens, Polynom *left, Polynom *right)
+{
+	Token *tmp = valid_equation(tokens);
+	if (tmp) {
+		if (tmp->type != END)
+			printf("Invalid syntax: '%s'\n", tmp->str);
 		return 1;
 	}
+	size_t i = 0;
 
+	*left = extract_term(tokens, &i);
+	if (!left->terms && left->size != 0)
+		return 1;
+	*right = extract_term(tokens, &i);
+	if (!right->terms && left->size != 0)
+		return 1;
 	return 0;
 }
-
-static char *rm_space(char *str)
-{
-	size_t i = 0;
-	size_t j = 0;
-
-	while (str[i])
-	{
-		if (!ft_isblank(str[i]))
-		{
-			str[j] = str[i];
-			j++;
-		}	
-		i++;
-	}
-	str[j] = '\0';
-	
-	return str;
-}
-
-static size_t term_len(char *str)
-{
-	size_t i = 0;
-
-	if (!str)
-		return 0;
-	
-	while (str[i])
-	{
-		if ((str[i] == '+' || str[i] == '-') && i > 0)
-			return i;
-		i++;
-	}
-	return i;
-}
-
-static Term *split_term(char *str)
-{
-	Term *new = NULL;
-	Term *list = NULL;
-	size_t i = 0;
-	size_t len = 0;
-
-	while (str[i])
-	{
-		len = term_len(str+i);
-		if (len == 0)
-			return (free_list(list), NULL);
-		new = create_node();
-		if (!new)
-			return (free_list(list), NULL);
-		new->str = ft_substr(str, i, len);
-		if (!new->str)
-			return (free_list(list), NULL);
-		fill_term(new);
-		add_node(&list, new);
-		i += len;
-	}
-	return list;
-}
-
-int parse(Data *data, char *str)
-{
-	char **split = NULL;
-
-	str = rm_space(str);
-	if (check_char(str))
-		return 1;
-	split = ft_split(str, '=');
-	if (!split)
-		return 1;
-	data->left = split_term(split[0]);
-	if (!data->left)
-		return (free_array(split), 1);
-	data->right = split_term(split[1]);
-	if (!data->right)
-		return (free_array(split), 1);
-	free_array(split);
-	return 0;
-}
-
