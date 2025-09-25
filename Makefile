@@ -2,11 +2,11 @@ NAME = computorv1
 
 CC = gcc
 FLAG = -Wall -Wextra -Werror
-LEAK = -fsanitize=address -g
+LEAK = -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer -g
 INCLUDE = -lm
 
 HEADER = computorv1.h
-SRC = main.c token.c parse.c refacto.c solve.c utils.c
+SRC = main.c token.c valid.c parse.c refacto.c solve.c utils.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)

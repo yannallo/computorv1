@@ -1,52 +1,5 @@
 #include "computorv1.h"
 
-static Token *valid_equation(Token *tokens)
-{
-	size_t i = 0;
-	bool var = false;
-	TYPE next;
-	TYPE cur = tokens[0].type;
-
-	if (!(cur == SIGN || cur == INT || cur == FLOAT || cur == VAR || cur == END)) {
-		printf("Invalid syntax: left side of equation\n");
-		return tokens;
-	}
-	while (tokens[i+1].type != END)
-	{
-		cur = tokens[i].type;
-		next = tokens[i+1].type;
-
-		if (!var && (cur == VAR || next == VAR))
-			var = true;
-		if ((cur == INT || cur == FLOAT) && !(next == EQUAL || next == OP || next == SIGN || next == VAR))
-			return tokens+i+1;
-		else if (cur == OP && !(next == INT || next == FLOAT || next == VAR))
-			return tokens+i+1;
-		else if (cur == SIGN && !(next == INT || next == FLOAT || next == VAR))
-			return tokens+i+1;
-		else if (cur == VAR && !(next == EQUAL || next == OP || next == SIGN || next == POW))
-			return tokens+i+1;
-		else if (cur == POW && !(next == INT || next == FLOAT))
-			return tokens+i+1;
-		else if (cur == EQUAL && !(next == INT || next == FLOAT || next == SIGN || next == VAR))
-			return tokens+i+1;
-		else if (next == POW && cur != VAR)
-			return tokens+i+1;
-		else if (next == OP && !(cur == INT || cur == FLOAT))
-			return tokens+i+1;
-		i++;
-	}
-	if (!(next == INT || next == FLOAT || next == VAR)) {
-		printf("Invalid syntax: right side of equation\n");
-		return tokens + i + 1;
-	}
-	if (!var) {
-		printf("Invalid syntax: Missing a variable 'X'\n");
-		return tokens + i + 1;
-	}
-	return NULL;
-}
-
 static size_t count_term(Token *tokens, size_t i)
 {
 	size_t count = 0;
@@ -104,11 +57,6 @@ static Polynom extract_term(Token *tokens, size_t *i)
 	}
 	while (tokens[*i].type != END && tokens[*i].type != EQUAL) {
 		Term t = parse_term(tokens, i);
-		if (t.coef == HUGE_VAL || t.coef == -HUGE_VAL || t.coef == DBL_MIN || t.power == ULONG_MAX) {
-			printf("ERROR: INVALID CONVERTION\n");
-			poly.size = 0;
-			return poly;
-		}
 		poly.terms[idx] = t;
 		idx++;
 	}
@@ -119,12 +67,6 @@ static Polynom extract_term(Token *tokens, size_t *i)
 
 int parse(Token *tokens, Polynom *left, Polynom *right)
 {
-	Token *tmp = valid_equation(tokens);
-	if (tmp) {
-		if (tmp->type != END)
-			printf("Invalid syntax: '%s'\n", tmp->str);
-		return 1;
-	}
 	size_t i = 0;
 
 	*left = extract_term(tokens, &i);

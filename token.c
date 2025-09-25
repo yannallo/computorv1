@@ -20,7 +20,7 @@ static char *rm_space(char *str) {
 	size_t j = 0;
 
 	while (str[i]) {
-		while (str[j] == ' ')
+		while (ft_isspace(str[j]))
 			j++;
 		str[i] = str[j];
 		i++;
@@ -32,17 +32,28 @@ static char *rm_space(char *str) {
 static int check_char(char *str) {
 	size_t i = 0;
 	size_t count = 0;
+	bool var = false;
 
 	while (str[i]) {
 		if (!ft_strchr("0123456789*-+.X^=", str[i])) {
-			printf("Invalid syntax: '%c' not valid\n", str[i]);
+			printf("Invalid char: '%c' not accepted\n", str[i]);
 			return 1;
 		}
+		if (str[i] == 'X' && !var)
+			var = true;
 		if (str[i] == '=')
 			count++;
 		i++;
 	}
-	if (count == 0) {
+	if (i == 0) {
+		ft_putstr("Missing an equation\n");
+		return 1;
+	}
+	else if (!var) {
+		ft_putstr("Invalid syntax: Missing a variable 'X'\n");
+		return 1;
+	}
+	else if (count == 0) {
 		ft_putstr("Invalid syntax: Missing an equality\n");
 		return 1;
 	}
@@ -89,8 +100,9 @@ static int fill_tokens(char *str, Token *tokens) {
 			j = i;		
 			tokens[idx].type = INT;
 			while (str[j+1] && (ft_isdigit(str[j+1]) || str[j+1] == '.')) {
-				if (str[j+1] == '.')
+				if (str[j+1] == '.') {
 					tokens[idx].type = FLOAT;
+				}
 				j++;
 			}
 			free(tokens[idx].str);

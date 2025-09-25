@@ -31,7 +31,7 @@ static void print_equation(double *coefs, size_t power)
 			if (i == 1)
 				printf("X");
 			else if (i != 0)
-				printf("X^%ld", i);
+				printf("X^%zu", i);
 			printf(" ");
 		}
 	}
@@ -63,9 +63,20 @@ void solve_quadratic(double *coefs)
 		printf("Solution: %g\n", (-b + sqrt(discri)) / (2*a));
 	}
 	else {
-		double tmp = -b / (2*a);
+		double real = -b / (2*a);
 		double i = sqrt(-discri) / (2*a);
-		printf("Solution:\n%g + %gi  %g - %gi\n", tmp, i, tmp, i);
+		if (real != 0) {
+			if (i == 1)
+				printf("Solution:\n%g + i  %g - i\n", real, real);
+			else
+				printf("Solution:\n%g + %gi  %g - %gi\n", real, i, real, i);
+		}
+		else {
+			if (i == 1)
+				printf("Solutions:\ni  -i\n");
+			else
+				printf("Solutions:\n%gi  -%gi\n", i, i);
+		}
 	}
 }
 
@@ -77,7 +88,7 @@ void solve(double *coefs, size_t max_power)
 			power = i;
 	}
 	print_equation(coefs, power);
-	printf("Equation degree: %ld\n", power);
+	printf("Equation degree: %zu\n", power);
 	if (power > 2)
 		printf("Can't solve polynomial above second degree\n");
 	else if (power == 0) {

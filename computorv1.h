@@ -38,19 +38,23 @@ typedef struct s_polynom {
 //Token
 Token *tokenize(char *str);
 
+//Valid
+int valid(Token *tokens);
+
 //Utils
 size_t ft_strlen(char *str);
 int ft_putstr(char *str);
 int ft_isdigit(int c);
+int ft_isspace(int c);
 char *ft_substr(char *str, int offset, int len);
 char *ft_strchr(char *str, int c);
-void free_all(Token *tokens, Polynom l, Polynom r);
+void free_all(Token *tokens, Term *l, Term *r);
 
 //Parse
 int parse(Token *tokens, Polynom *left, Polynom *right);
 
 //Refacto
-double *refacto(Polynom *left, Polynom *right, size_t *max_power);
+double *refacto(Polynom left, Polynom right, size_t *max_power);
 
 //Solve
 void solve(double *coefs, size_t max_power);

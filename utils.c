@@ -18,6 +18,11 @@ int ft_isdigit(int c)
 	return (c >= '0' && c <= '9');
 }
 
+int ft_isspace(int c)
+{
+	return (c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == ' ' || c == '\r');
+}
+
 char *ft_substr(char *str, int offset, int len)
 {
 	char *buf;
@@ -53,7 +58,7 @@ char *ft_strchr(char *str, int c)
 	return NULL;
 }
 
-void free_all(Token *tokens, Polynom l, Polynom r)
+void free_all(Token *tokens, Term *l, Term *r)
 {
 	size_t i = 0;
 	if (tokens) {
@@ -64,8 +69,8 @@ void free_all(Token *tokens, Polynom l, Polynom r)
 		}
 		free(tokens);
 	}
-	if (l.terms)
-		free(l.terms);
-	if (r.terms)
-		free(r.terms);
+	if (l)
+		free(l);
+	if (r)
+		free(r);
 }	
