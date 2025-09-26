@@ -3,14 +3,14 @@
 int main(int ac, char **av)
 {
 	if (ac == 1) {
-		ft_putstr("A simple solver of polynomial\n\n");
-		ft_putstr("Usage: ./computorv1 \"equation\"\n\n");
-		ft_putstr("Exemples:\n./computorv1 \"3 * X^2 + 2 * X^1 - 1 = 2 * X^1\"\n");
-		ft_putstr("./computorv1 \"2X^2 + X - 1 = 0\"\n");
+		ft_putstr(CYAN "A simple solver of polynomial\n\n"RESET);
+		ft_putstr(CYAN "Usage: ./computorv1 \"equation\"\n\n"RESET);
+		ft_putstr(CYAN "Exemples:\n./computorv1 \"3 * X^2 + 2 * X^1 - 1 = 2 * X^1\"\n"RESET);
+		ft_putstr(CYAN "./computorv1 \"2X^2 + X - 1 = 0\"\n"RESET);
 		return 0;
 	}
 	if (ac != 2) {
-		ft_putstr("Give 1 equation to solve\n");
+		ft_putstr(CYAN "Give 1 equation to solve" RESET "\n");
 		return 0;
 	}
 

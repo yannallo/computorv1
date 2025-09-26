@@ -10,7 +10,7 @@ static int get_token(int c)
 		return OP;
 	else if (c == '^')
 		return POW;
-	else if (c == 'X')
+	else if (c == 'X' || c == 'x')
 		return VAR;
 	return 0;
 }
@@ -32,33 +32,33 @@ static char *rm_space(char *str) {
 static int check_char(char *str) {
 	size_t i = 0;
 	size_t count = 0;
-	bool var = false;
+	int var = 0;
 
 	while (str[i]) {
-		if (!ft_strchr("0123456789*-+.X^=", str[i])) {
-			printf("Invalid char: '%c' not accepted\n", str[i]);
+		if (!ft_strchr("0123456789*-+.xX^=", str[i])) {
+			printf(RED "Invalid char: '%c' not accepted" RESET "\n", str[i]);
 			return 1;
 		}
-		if (str[i] == 'X' && !var)
-			var = true;
+		if ((str[i] == 'x' || str[i] == 'X') && !var)
+			var = 1;
 		if (str[i] == '=')
 			count++;
 		i++;
 	}
 	if (i == 0) {
-		ft_putstr("Missing an equation\n");
+		ft_putstr(RED "Missing an equation" RESET "\n");
 		return 1;
 	}
 	else if (!var) {
-		ft_putstr("Invalid syntax: Missing a variable 'X'\n");
+		ft_putstr(RED "Invalid syntax: Missing a variable 'X'" RESET "\n");
 		return 1;
 	}
 	else if (count == 0) {
-		ft_putstr("Invalid syntax: Missing an equality\n");
+		ft_putstr(RED "Invalid syntax: Missing an equality" RESET "\n");
 		return 1;
 	}
 	else if (count != 1) {
-		ft_putstr("Invalid syntax: Multiple '='\n");
+		ft_putstr(RED "Invalid syntax: Multiple '='" RESET "\n");
 		return 1;
 	}
 	return 0;
@@ -110,7 +110,7 @@ static int fill_tokens(char *str, Token *tokens) {
 			i = j;
 		}
 		if (!tokens[idx].str) {
-			ft_putstr("Error: MALLOC FAIL\n");
+			printf(RED "Error: MALLOC FAIL" RESET "\n");
 			return 1;
 		}
 		idx++;
@@ -127,11 +127,10 @@ Token *tokenize(char *str)
 		return NULL;
 	Token *tokens = malloc(sizeof(Token) * (get_token_size(str) + 1));
 	if (!tokens) {
-		ft_putstr("Error: MALLOC FAIL\n");
+		printf(RED "Error: MALLOC FAIL" RESET "\n");
 		return NULL;
 	}
 	if (fill_tokens(str, tokens)) {
-		ft_putstr("Error: Number is out of range\n"); 
 		free(tokens);
 		return NULL;
 	}
