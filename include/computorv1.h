@@ -9,6 +9,14 @@
 #include <math.h>
 #include <limits.h>
 
+#define RED	"\033[31m"
+#define GREEN	"\033[32m"
+#define YELLOW	"\033[33m"
+#define BLUE	"\033[34m"
+#define MAGENTA	"\033[35m"
+#define CYAN	"\033[36m"
+#define RESET	"\033[0m"
+
 typedef enum {
 	END,
 	INT,
@@ -43,7 +51,7 @@ int valid(Token *tokens);
 
 //Utils
 size_t ft_strlen(char *str);
-int ft_putstr(char *str);
+void ft_putstr(char *str);
 int ft_isdigit(int c);
 int ft_isspace(int c);
 char *ft_substr(char *str, int offset, int len);

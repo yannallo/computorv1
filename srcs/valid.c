@@ -30,11 +30,11 @@ static Token *valid_equation(Token *tokens)
 		i++;
 	}
 	if (next == EQUAL) {
-		ft_putstr("Invalid syntax: Missing right side of equation\n");
+		ft_putstr(RED "Invalid syntax: Missing right side of equation" RESET "\n");
 		return tokens + i + 1;
 	}
 	if (!(next == INT || next == FLOAT || next == VAR)) {
-		ft_putstr("Invalid syntax: right side of equation\n");
+		ft_putstr(RED "Invalid syntax: right side of equation" RESET "\n");
 		return tokens + i;
 	}
 	return NULL;
@@ -49,14 +49,14 @@ static int valid_numbers(Token *tokens)
 		if (tokens[i].type == FLOAT) {
 			double tmp = strtod(tokens[i].str, &endptr);
 			if (tmp == HUGE_VAL || tmp == -HUGE_VAL || tmp == DBL_MIN || endptr[0]) {
-				printf("Error: invalid convertion '%s'\n", tokens[i].str);
+				printf(RED "Error: invalid convertion '%s'" RESET "\n", tokens[i].str);
 				return 1;
 			}
 		}
 		else if (tokens[i].type == INT) {
 			size_t tmp = strtoul(tokens[i].str, &endptr, 10);
 			if (tmp == ULONG_MAX || endptr[0]) {
-				printf("Error: invalid convertion '%s'\n", tokens[i].str);
+				printf(RED "Error: invalid convertion '%s'" RESET "\n", tokens[i].str);
 				return 1;
 			}
 		}
@@ -70,17 +70,17 @@ int valid(Token *tokens)
 	TYPE cur = tokens[0].type;
 
 	if (cur == EQUAL) {
-		ft_putstr("Invalid syntax: Missing left side of equation\n");
+		printf(RED "Invalid syntax: Missing left side of equation" RESET "\n");
 		return 1;
 	}
 	if (cur == OP || cur == POW) {
-		printf("Invalid syntax: Left side of equation can't start with '%s'\n", tokens[0].str);
+		printf(RED "Invalid syntax: Left side of equation can't start with '%s'" RESET "\n", tokens[0].str);
 		return 1;
 	}
 	Token *tmp = valid_equation(tokens);
 	if (tmp) {
 		if (tmp->type != END)
-			printf("Invalid syntax: '%s'\n", tmp->str);
+			printf(RED "Invalid syntax: '%s'" RESET "\n", tmp->str);
 		return 1;
 	}
 	if (valid_numbers(tokens))

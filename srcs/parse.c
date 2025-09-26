@@ -52,7 +52,7 @@ static Polynom extract_term(Token *tokens, size_t *i)
 	poly.size = count_term(tokens, *i);
 	poly.terms = malloc(sizeof(Term) * poly.size);
 	if (!poly.terms) {
-		ft_putstr("Error: MALLOC FAIL\n");
+		ft_putstr(RED "Error: MALLOC FAIL" RESET "\n");
 		return poly;
 	}
 	while (tokens[*i].type != END && tokens[*i].type != EQUAL) {

@@ -8,9 +8,9 @@ size_t ft_strlen(char *str)
 	return i;
 }
 
-int ft_putstr(char *str)
+void ft_putstr(char *str)
 {
-	return write(1, str, ft_strlen(str));
+	write(1, str, ft_strlen(str));
 }
 
 int ft_isdigit(int c)
