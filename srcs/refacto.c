@@ -22,6 +22,10 @@ double *refacto(Polynom left, Polynom right, size_t *max_power)
 	double *coefs;
 
 	*max_power = get_max_power(left, right);
+	if (*max_power > 1000) {
+		ft_putstr(RED "Error: Power too large (max: 100)\n"RESET);
+		return NULL;
+	}
 	coefs = malloc(sizeof(double) * (*max_power + 1));
 	if (!coefs) {
 		ft_putstr(RED "Error: MALLOC FAIL" RESET "\n");

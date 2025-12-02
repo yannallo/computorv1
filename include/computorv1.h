@@ -8,6 +8,7 @@
 #include <float.h>
 #include <math.h>
 #include <limits.h>
+#include <string.h>
 
 #define RED		"\033[31m"
 #define GREEN	"\033[32m"
@@ -16,6 +17,8 @@
 #define MAGENTA	"\033[35m"
 #define CYAN	"\033[36m"
 #define RESET	"\033[0m"
+
+#define MAX_SIZE 1024
 
 typedef enum {
 	END,
