@@ -1,16 +1,16 @@
 #ifndef COMPUTORV1
 #define COMPUTORV1
 
+#include <math.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <float.h>
-#include <math.h>
 #include <limits.h>
 #include <string.h>
 
-#define RED		"\033[31m"
+#define RED	"\033[31m"
 #define GREEN	"\033[32m"
 #define YELLOW	"\033[33m"
 #define BLUE	"\033[34m"
@@ -50,24 +50,25 @@ typedef struct s_polynom {
 Token	*tokenize(char *str);
 
 //Valid
-int		valid(Token *tokens);
-
-//Utils
-size_t	ft_strlen(char *str);
-void	ft_putstr(char *str);
-int		ft_isdigit(int c);
-int		ft_isspace(int c);
-char	*ft_substr(char *str, int offset, int len);
-char	*ft_strchr(char *str, int c);
-void	free_all(Token *tokens, Term *l, Term *r);
+int	valid(Token *tokens);
 
 //Parse
-int		parse(Token *tokens, Polynom *left, Polynom *right);
+int	parse(Token *tokens, Polynom *left, Polynom *right);
 
 //Refacto
 double	*refacto(Polynom left, Polynom right, size_t *max_power);
 
 //Solve
 void	solve(double *coefs, size_t max_power);
+
+//Utils
+size_t	ft_strlen(char *str);
+void	ft_putstr(char *str);
+int	ft_isdigit(int c);
+int	ft_isspace(int c);
+char	*ft_substr(char *str, int offset, int len);
+char	*ft_strchr(char *str, int c);
+void	free_all(Token *tokens, Term *l, Term *r);
+double	ft_sqrt(double nbr);
 
 #endif

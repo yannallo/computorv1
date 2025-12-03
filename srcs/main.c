@@ -5,6 +5,10 @@ int read_input(int ac, char **av, char *buffer)
 	char *trunc;
 
 	if (ac == 2) {
+		if (ft_strlen(av[1]) > MAX_SIZE-1) {
+			ft_putstr(RED "Error: Equation too long (max: 1024)\n"RESET);
+			return 0;
+		}
 		buffer = strncpy(buffer, av[1], MAX_SIZE-1);
 		buffer[MAX_SIZE] = '\0';
 	}
@@ -13,7 +17,7 @@ int read_input(int ac, char **av, char *buffer)
 			ft_putstr(RED "Error: Can't read from stdin\n"RESET);
 			return 0;
 		}
-		trunc = strchr(buffer, '\n');
+		trunc = ft_strchr(buffer, '\n');
 		if (!trunc) {
 			ft_putstr(RED "Error: Equation too long (max: 1024)\n"RESET);
 			return 0;
@@ -24,6 +28,7 @@ int read_input(int ac, char **av, char *buffer)
 		}
 		*trunc = '\0';
 	}
+		
 	return 1;
 }
 

@@ -57,14 +57,15 @@ void solve_quadratic(double *coefs)
 
 	printf(YELLOW "Discriminant = %g" RESET "\n", discri);
 	if (discri > 0) {
-		printf(MAGENTA "Solutions:\n%g\n%g" RESET "\n", (-b + sqrt(discri)) / (2*a), (-b - sqrt(discri)) / (2*a));
+		printf(MAGENTA "Solutions:\n%g\n%g" RESET "\n", (-b + ft_sqrt(discri)) / (2*a), (-b - ft_sqrt(discri)) / (2*a));
 	}
 	else if (discri == 0) {
-		printf(MAGENTA "Solution:\n%g" RESET "\n", (-b + sqrt(discri)) / (2*a));
+		printf(MAGENTA "Solution:\n%g" RESET "\n", (-b + ft_sqrt(discri)) / (2*a));
 	}
 	else {
 		double real = -b / (2*a);
-		double i = sqrt(-discri) / (2*a);
+		double i = ft_sqrt(-discri) / (2*a);
+
 		if (real != 0) {
 			if (i == 1)
 				printf(MAGENTA "Solution:\n%g + i\n%g - i" RESET "\n", real, real);

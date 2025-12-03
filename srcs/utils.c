@@ -73,4 +73,26 @@ void free_all(Token *tokens, Term *l, Term *r)
 		free(l);
 	if (r)
 		free(r);
-}	
+}
+
+double ft_sqrt(double nbr)
+{
+	double	start = 1;
+	double	prev;
+
+	if (nbr == 0.0 || nbr == 1.0)
+		return nbr;
+	if (nbr >= 1.0)
+		start = nbr;
+
+	for (int i = 0; i < 50; i++)
+	{
+		prev = start;
+		start = 0.5 * (start + nbr / start);
+
+		if ((prev - start < 1e-15) && (start - prev < 1e-15))
+			break;
+	}
+	return start;
+}
+
